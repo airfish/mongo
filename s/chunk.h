@@ -162,6 +162,11 @@ namespace mongo {
 
         bool isJumbo() const { return _jumbo; }
 
+        /**
+         * Attempt to refresh maximum chunk size from config.
+         */
+        static void refreshChunkSize();
+
         //
         // public constants
         //

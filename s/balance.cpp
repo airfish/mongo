@@ -287,6 +287,12 @@ namespace mongo {
                 // ping has to be first so we keep things in the config server in sync
                 _ping( conn.conn() );
 
+                // use fresh shard state
+                Shard::reloadShardInfo();
+                
+                // refresh chunk size (even though another balancer might be active)
+                Chunk::refreshChunkSize();
+
                 // now make sure we should even be running
                 if ( ! grid.shouldBalance() ) {
                     LOG(1) << "skipping balancing round because balancing is disabled" << endl;
@@ -297,9 +303,6 @@ namespace mongo {
                 }
                 
                 uassert( 13258 , "oids broken after resetting!" , _checkOIDs() );
-
-                // use fresh shard state
-                Shard::reloadShardInfo();
 
                 {
                     dist_lock_try lk( &balanceLock , "doing balance round" );
